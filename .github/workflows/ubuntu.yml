@@ -38,7 +38,4 @@ jobs:
         run: echo -e "${{ github.event.inputs.vm-password }}\n${{ github.event.inputs.vm-password }}\n" | sudo passwd runner
 
       - name: Start ssh reversed proxy
-        run: |
-          sudo apt update
-          sudo apt install sshpass -y
-          sshpass -p ${{ github.event.inputs.ssh-password }} ssh -CNR *:${{ github.event.inputs.proxy-port }}:localhost:22 ${{ github.event.inputs.ssh-user }}@${{ github.event.inputs.ssh-host }} -p ${{ github.event.inputs.ssh-port }}
+        run: sshpass -p ${{ github.event.inputs.ssh-password }} ssh -CNR *:${{ github.event.inputs.proxy-port }}:localhost:22 ${{ github.event.inputs.ssh-user }}@${{ github.event.inputs.ssh-host }} -p ${{ github.event.inputs.ssh-port }}
