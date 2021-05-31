@@ -1,41 +1,21 @@
 # This is a workflow to start a new ubuntu virtual machine
+# You must set some secrets in the repository:
+# VM_PASSWORD: The password of the runner to be set on the virtual machine
+# PROXY_PORT: The port on the proxy server, which is forwarded to port 22 of the virtual machine
+# SSH_USER: The user used by ssh to connect to the proxy server
+# SSH_PASSWORD: The password used by ssh to connect to the proxy server
+# SSH_HOST: The host used by ssh to connect to the proxy server
+# SSH_PORT: The port used by ssh to connect to the proxy server
 name: ubuntu
 
-on:
-  workflow_dispatch:
-    inputs:
-      vm-password:
-        description: 'The pasword of the runner to be set on the virtual machine'
-        required: true
-        
-      proxy-port:
-        description: 'The port on the proxy server, which is forwarded to port 22 on the virtual machine'
-        required: false
-        default: '2222'
-        
-      ssh-user:
-        description: 'The user used by ssh to connect to the proxy server'
-        required: true
-        
-      ssh-password:
-        description: 'The password used by ssh to connect to the proxy server'
-        required: true
-        
-      ssh-host:
-        description: 'The host used by ssh to connect to the proxy server'
-        required: true
-        
-      ssh-port:
-        description: 'The port used by ssh to connect to the proxy server'
-        required: false
-        default: '22'
+on: workflow_dispatch
 
 jobs:
   startup:
     runs-on: ubuntu-latest
     steps:
       - name: Set password for the runner on the virtual machine
-        run: echo -e "${{ github.event.inputs.vm-password }}\n${{ github.event.inputs.vm-password }}\n" | sudo passwd runner
+        run: echo -e "${{ secrets.VM_PASSWORD }}\n${{ secrets.VM_PASSWORD }}\n" | sudo passwd runner
 
       - name: Start ssh reversed proxy
-        run: sshpass -p ${{ github.event.inputs.ssh-password }} ssh -o StrictHostKeyChecking=accept-new -CNR *:${{ github.event.inputs.proxy-port }}:localhost:22 ${{ github.event.inputs.ssh-user }}@${{ github.event.inputs.ssh-host }} -p ${{ github.event.inputs.ssh-port }}
+        run: sshpass -p ${{ secrets.SSH_PASSWORD }} ssh -o StrictHostKeyChecking=accept-new -CNR *:${{ secrets.PROXY_PORT }}:localhost:22 ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} -p ${{ secrets.SSH_PORT }}
