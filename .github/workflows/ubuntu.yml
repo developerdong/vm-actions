@@ -19,4 +19,4 @@ jobs:
         run: echo -e "${{ secrets.VM_PASSWORD }}\n${{ secrets.VM_PASSWORD }}\n" | sudo passwd runner
 
       - name: Start ssh reversed proxy
-        run: sshpass -p ${{ secrets.SSH_PASSWORD }} ssh -o StrictHostKeyChecking=accept-new -CNR *:${{ secrets.PROXY_PORT }}:localhost:22 ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} -p ${{ secrets.SSH_PORT }}
+        run: sshpass -p ${{ secrets.SSH_PASSWORD }} ssh -vvv -o StrictHostKeyChecking=accept-new -CNR *:${{ secrets.PROXY_PORT }}:localhost:22 ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} -p ${{ secrets.SSH_PORT }}
