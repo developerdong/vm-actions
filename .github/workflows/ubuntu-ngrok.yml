@@ -1,0 +1,25 @@
+# This is a workflow to start a new ubuntu virtual machine
+# You must set some secrets in the repository:
+# VM_PASSWORD: The password of the runner to be set on the virtual machine
+# NGROK_AUTHTOKEN: Your ngrok auth token to create a tunnel
+name: ubuntu-ngrok
+
+on: workflow_dispatch
+
+jobs:
+  startup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set password for the runner on the virtual machine
+        run: echo -e "${{ secrets.VM_PASSWORD }}\n${{ secrets.VM_PASSWORD }}\n" | sudo passwd runner
+
+      - name: Install shellinabox
+        run: |
+          sudo apt update
+          sudo apt install -y shellinabox
+      
+      - name: Install and run ngrok
+        run: |
+          sudo snap install ngrok
+          ngrok config add-authtoken ${{ secrets.NGROK_AUTHTOKEN }} --config .ngrok.yml
+          ngrok http https://localhost:4200 --config .ngrok.yml --log stdout
