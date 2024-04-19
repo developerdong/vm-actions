@@ -13,13 +13,20 @@ jobs:
       - name: Set password for the runner on the virtual machine
         run: echo -e "${{ secrets.VM_PASSWORD }}\n${{ secrets.VM_PASSWORD }}\n" | sudo passwd runner
 
-      - name: Install shellinabox
+      - name: Install and configure code-server
         run: |
           sudo apt update
-          sudo apt install -y shellinabox
+          sudo apt install -y curl
+          # Install code-server
+          curl -fsSL https://code-server.dev/install.sh | sh
+          # Set the password in the config file
+          mkdir -p ~/.config/code-server
+          echo "password: ${{ secrets.VM_PASSWORD }}" > ~/.config/code-server/config.yaml
+          # Start code-server
+          sudo systemctl start code-server@$USER
       
       - name: Install and run ngrok
         run: |
           sudo snap install ngrok
           ngrok config add-authtoken ${{ secrets.NGROK_AUTHTOKEN }} --config .ngrok.yml
-          ngrok http https://localhost:4200 --config .ngrok.yml --log stdout
+          ngrok http http://localhost:8080 --config .ngrok.yml --log stdout
